@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.text import slugify
+from versatileimagefield.fields import VersatileImageField
 
 
 class Category(models.Model):
@@ -70,14 +71,11 @@ class Product(models.Model):
 
 
 class ProductImage(models.Model):
-    """
-    Загрузка изображения
-    """
     product = models.ForeignKey(Product, related_name='images', on_delete=models.CASCADE, verbose_name='Продукт')
-    image = models.ImageField(upload_to='products/images', verbose_name='Изображение')
+    image = VersatileImageField(upload_to='products/', verbose_name='Изображение')
 
     def __str__(self):
-        return f'Изображение для({self.product.name})'
+        return f'Изображение для {self.product.name}'
 
     class Meta:
         verbose_name = 'Изображение'
