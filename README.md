@@ -81,7 +81,7 @@ python manage.py runserver
 <details>
 <summary><b>🖼️ Swagger UI</b></summary>
 
-![Swagger UI](![img.png](static/img.png)
+![Swagger UI](![img1.png](static/img.png)
 </details>
 
 <details>
