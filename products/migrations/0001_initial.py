@@ -8,36 +8,85 @@ class Migration(migrations.Migration):
 
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Category',
+            name="Category",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255, verbose_name='Категория')),
-                ('slug', models.SlugField(max_length=255, unique=True, verbose_name='URL- идентификатор')),
-                ('image', models.ImageField(blank=True, null=True, upload_to='categories/', verbose_name='Изображение')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255, verbose_name="Категория")),
+                (
+                    "slug",
+                    models.SlugField(
+                        max_length=255, unique=True, verbose_name="URL- идентификатор"
+                    ),
+                ),
+                (
+                    "image",
+                    models.ImageField(
+                        blank=True,
+                        null=True,
+                        upload_to="categories/",
+                        verbose_name="Изображение",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Категория',
-                'verbose_name_plural': 'Категории',
-                'ordering': ['name'],
+                "verbose_name": "Категория",
+                "verbose_name_plural": "Категории",
+                "ordering": ["name"],
             },
         ),
         migrations.CreateModel(
-            name='Subcategory',
+            name="Subcategory",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255, verbose_name='Подкатегория')),
-                ('slug', models.SlugField(max_length=255, unique=True, verbose_name='URL-идентификатор')),
-                ('image', models.ImageField(blank=True, null=True, upload_to='subcategories/', verbose_name='Изображение')),
-                ('category', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='subcategories', to='products.category', verbose_name='Родительская категория')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255, verbose_name="Подкатегория")),
+                (
+                    "slug",
+                    models.SlugField(
+                        max_length=255, unique=True, verbose_name="URL-идентификатор"
+                    ),
+                ),
+                (
+                    "image",
+                    models.ImageField(
+                        blank=True,
+                        null=True,
+                        upload_to="subcategories/",
+                        verbose_name="Изображение",
+                    ),
+                ),
+                (
+                    "category",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="subcategories",
+                        to="products.category",
+                        verbose_name="Родительская категория",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Подкатегория',
-                'verbose_name_plural': 'Подкатегории',
+                "verbose_name": "Подкатегория",
+                "verbose_name_plural": "Подкатегории",
             },
         ),
     ]

@@ -1,21 +1,22 @@
 from rest_framework import serializers
-from .models import ProductImage, Product, Subcategory, Category
 from versatileimagefield.serializers import VersatileImageFieldSerializer
+
+from .models import Category, Product, ProductImage, Subcategory
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
     image = VersatileImageFieldSerializer(
         sizes=[
-            ('full', 'url'),
-            ('thumbnail', 'thumbnail__100x100'),
-            ('medium', 'crop__400x400'),
-            ('large', 'crop__800x800')
+            ("full", "url"),
+            ("thumbnail", "thumbnail__100x100"),
+            ("medium", "crop__400x400"),
+            ("large", "crop__800x800"),
         ]
     )
 
     class Meta:
         model = ProductImage
-        fields = ['id', 'image']
+        fields = ["id", "image"]
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -23,7 +24,16 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'slug', 'price', 'description', 'subcategory', 'images', 'created_at']
+        fields = [
+            "id",
+            "name",
+            "slug",
+            "price",
+            "description",
+            "subcategory",
+            "images",
+            "created_at",
+        ]
 
 
 class SubcategorySerializer(serializers.ModelSerializer):
@@ -31,7 +41,7 @@ class SubcategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Subcategory
-        fields = ['id', 'name', 'slug', 'image', 'category', 'products']
+        fields = ["id", "name", "slug", "image", "category", "products"]
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -39,4 +49,4 @@ class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ['id', 'name', 'slug', 'image', 'subcategories']
+        fields = ["id", "name", "slug", "image", "subcategories"]

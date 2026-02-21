@@ -1,6 +1,8 @@
 from rest_framework import viewsets
-from .models import Category, Subcategory, Product
-from .serializers import CategorySerializer, ProductSerializer, SubcategorySerializer
+
+from .models import Category, Product, Subcategory
+from .serializers import (CategorySerializer, ProductSerializer,
+                          SubcategorySerializer)
 
 
 class CategoryViewSet(viewsets.ModelViewSet):
@@ -14,5 +16,5 @@ class SubcategoryViewSet(viewsets.ModelViewSet):
 
 
 class ProductViewSet(viewsets.ModelViewSet):
-    queryset = Product.objects.all().prefetch_related('images')
+    queryset = Product.objects.all().prefetch_related("images")
     serializer_class = ProductSerializer

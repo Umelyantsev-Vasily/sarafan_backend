@@ -66,7 +66,31 @@ python manage.py runserver
 
 ## 📚 API Документация
 
-### 🔐 Аутентификация
+Проект включает автоматически сгенерированную документацию OpenAPI (Swagger).
+
+### Интерактивная документация
+
+| Тип | URL | Описание |
+|-----|-----|----------|
+| 🔵 Swagger UI | `http://127.0.0.1:8000/api/docs/` | Интерактивная документация с возможностью тестировать запросы |
+| 🔴 ReDoc | `http://127.0.0.1:8000/api/redoc/` | Альтернативное представление документации |
+| 📋 JSON Schema | `http://127.0.0.1:8000/api/schema/` | OpenAPI схема в формате JSON |
+
+### Скриншоты
+
+<details>
+<summary><b>🖼️ Swagger UI</b></summary>
+
+![Swagger UI](![img.png](static/img.png)
+</details>
+
+<details>
+<summary><b>🖼️ ReDoc</b></summary>
+
+![ReDoc](static/img1.png)
+</details>
+
+### 🔐 Аутентификация (JWT)
 
 <details>
 <summary><b>Получение токена</b></summary>
@@ -89,6 +113,8 @@ Content-Type: application/json
     "access": "eyJ0eXAiOiJKV1QiLCJhbGc..."
 }
 ```
+
+> 🔑 **Важно**: Полученный `access` токен нужно передавать в заголовке `Authorization: Bearer <token>` для доступа к защищенным эндпоинтам корзины.
 </details>
 
 <details>
@@ -109,15 +135,17 @@ Content-Type: application/json
 <details>
 <summary><b>GET /api/categories/</b></summary>
 
-```http
-GET /api/categories/
-```
+Получить список всех категорий с вложенными подкатегориями и товарами.
 
-**Response:**
+**Parameters:**
+- `page` - номер страницы (пагинация)
+- `page_size` - количество элементов на странице (по умолчанию 10)
+
+**Response 200 OK:**
 ```json
 {
     "count": 2,
-    "next": null,
+    "next": "http://127.0.0.1:8000/api/categories/?page=2",
     "previous": null,
     "results": [
         {
@@ -132,7 +160,7 @@ GET /api/categories/
                     "slug": "smartfony",
                     "image": null,
                     "category": 1,
-                    "products": [ ]
+                    "products": [...]
                 }
             ]
         }
@@ -146,11 +174,9 @@ GET /api/categories/
 <details>
 <summary><b>GET /api/products/</b></summary>
 
-```http
-GET /api/products/
-```
+Получить список всех товаров с изображениями в 3-х размерах.
 
-**Response:**
+**Response 200 OK:**
 ```json
 {
     "id": 1,
@@ -169,12 +195,15 @@ GET /api/products/
                 "large": "/media/products/large_iphone.jpg"
             }
         }
-    ]
+    ],
+    "created_at": "2026-02-21T08:49:37.665925Z"
 }
 ```
 </details>
 
 ### 🛒 Корзина (требуется JWT)
+
+> 🔐 Все эндпоинты корзины требуют заголовок: `Authorization: Bearer <access_token>`
 
 <details>
 <summary><b>➕ Добавить товар</b></summary>
@@ -189,6 +218,10 @@ Content-Type: application/json
     "quantity": 2
 }
 ```
+
+**Особенности:**
+- Если товар уже есть в корзине - увеличивается количество
+- Цена фиксируется в момент добавления
 </details>
 
 <details>
@@ -203,7 +236,16 @@ Authorization: Bearer <access_token>
 ```json
 {
     "id": 1,
-    "items": [ ],
+    "user": 1,
+    "created_at": "2026-02-21T08:50:24.133172Z",
+    "items": [
+        {
+            "id": 3,
+            "product": {...},
+            "price": "1000000.00",
+            "quantity": 4
+        }
+    ],
     "total_items": 4,
     "total_price": 4000000.0
 }
@@ -223,6 +265,8 @@ Content-Type: application/json
     "quantity": 5
 }
 ```
+
+> 💡 Если quantity = 0, товар удаляется из корзины
 </details>
 
 <details>
@@ -260,6 +304,10 @@ def sequence(n):
         num += 1
     return result
 
+# Примеры:
+print(sequence(1))   # [1]
+print(sequence(3))   # [1, 2, 2]
+print(sequence(7))   # [1, 2, 2, 3, 3, 3, 4]
 print(sequence(10))  # [1, 2, 2, 3, 3, 3, 4, 4, 4, 4]
 ```
 
@@ -268,19 +316,36 @@ print(sequence(10))  # [1, 2, 2, 3, 3, 3, 4, 4, 4, 4]
 ```
 sarafan_backend/
 ├── config/              # Настройки проекта
+│   ├── settings.py
+│   ├── urls.py          # Подключение Swagger/ReDoc
+│   └── ...
 ├── products/            # Приложение с товарами
 │   ├── models.py        # Category, Subcategory, Product, ProductImage
-│   ├── serializers.py   # Сериализаторы
+│   ├── serializers.py   # Сериализаторы с 3-мя размерами изображений
 │   ├── views.py         # ViewSets
 │   └── admin.py         # Админка
-├── cart/                 # Приложение корзины
+├── cart/                # Приложение корзины
 │   ├── models.py        # Cart, CartItem
 │   ├── serializers.py   # Сериализаторы с подсчетом сумм
 │   └── views.py         # ViewSet с кастомными actions
-├── media/                # Загруженные изображения
+├── media/               # Загруженные изображения
 ├── manage.py
-├── pyproject.toml        # Зависимости (Poetry)
-└── .env                  # Переменные окружения
+├── pyproject.toml       # Зависимости (Poetry)
+└── .env                 # Переменные окружения
+```
+
+## 🧪 Тестирование API
+
+### Через Swagger UI
+1. Запусти сервер
+2. Открой `http://127.0.0.1:8000/api/docs/`
+3. Нажми "Authorize" и введи токен (для защищенных эндпоинтов)
+4. Тестируй запросы прямо в браузере!
+
+### Через Postman
+Коллекцию Postman можно импортировать из OpenAPI схемы:
+```
+http://127.0.0.1:8000/api/schema/
 ```
 
 ## ✅ Выполненные требования
@@ -299,11 +364,47 @@ sarafan_backend/
 - [x] Приватный доступ к корзине (только свои)
 - [x] JWT авторизация
 - [x] Задание №1 (последовательность)
+- [x] Swagger/ReDoc документация
 
-## 📄 Лицензия
+---
 
-Проект распространяется под [лицензией MIT](LICENSE)
+## 🔧 Линтеры и форматтеры
 
+Проект использует современные инструменты для поддержания качества кода:
+
+| Инструмент | Назначение | Команда |
+|------------|------------|---------|
+| **[Black](https://github.com/psf/black)** | Форматтер кода | `poetry run black .` |
+| **[isort](https://github.com/PyCQA/isort)** | Сортировка импортов | `poetry run isort .` |
+| **[Flake8](https://github.com/PyCQA/flake8)** | Линтер | `poetry run flake8 .` |
+| **[Mypy](https://github.com/python/mypy)** | Проверка типов | `poetry run mypy .` |
+
+### Быстрые команды
+
+Добавьте в `pyproject.toml` для удобства:
+
+```toml
+[tool.poetry.scripts]
+lint = "flake8 ."
+format = "black . && isort ."
+typecheck = "mypy ."
+```
+
+Теперь можно запускать:
+
+```bash
+poetry run format  # отформатировать код
+poetry run lint    # проверить стиль
+poetry run typecheck  # проверить типы
+```
+
+### Конфигурация
+
+Все конфигурации хранятся в корне проекта:
+- `.flake8` - настройки Flake8
+- `.isort.cfg` - настройки isort
+- `mypy.ini` - настройки mypy
+- `pyproject.toml` - настройки Black и Poetry
 ---
 ## 👨‍💻 Разработчик
 
